@@ -6,4 +6,6 @@ exec /root/.venv/bin/streamlit run /app/streamlit_app/app.py \
   --server.headless true \
   --server.enableCORS false \
   --server.enableXsrfProtection false \
+  --server.enableStaticServing true \
   --browser.gatherUsageStats false
+
