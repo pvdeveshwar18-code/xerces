@@ -1,6 +1,3 @@
-📄 File 4: xerces_plus.py
-On GitHub → Add file → Create new file → filename: xerces_plus.py → paste this → commit:
-
 """
 XERCES+ — Enhancement Module
 Adds: Watchlist, Alerts, Sector Heatmap, Compare, AI Analyst, Journal, PDF/Excel Export
