@@ -19,8 +19,38 @@ import plotly.graph_objects as go
 import yfinance as yf
 
 # ── Persistent storage paths ────────────────────────────────────────────────
-DATA_DIR = Path(os.environ.get("XERCES_DATA_DIR", "/app/streamlit_app/data"))
-DATA_DIR.mkdir(parents=True, exist_ok=True)
+def _resolve_data_dir() -> Path:
+    """Pick a writable directory that works locally, in Docker, and on Streamlit Cloud."""
+    # 1. Explicit env override
+    env_dir = os.environ.get("XERCES_DATA_DIR")
+    if env_dir:
+        p = Path(env_dir)
+        try:
+            p.mkdir(parents=True, exist_ok=True)
+            return p
+        except Exception:
+            pass
+    # 2. Alongside this module (works everywhere the code is checked out)
+    try:
+        here = Path(__file__).resolve().parent / "data"
+        here.mkdir(parents=True, exist_ok=True)
+        return here
+    except Exception:
+        pass
+    # 3. Current working directory
+    try:
+        cwd = Path.cwd() / "data"
+        cwd.mkdir(parents=True, exist_ok=True)
+        return cwd
+    except Exception:
+        pass
+    # 4. Last-resort: OS temp dir (ephemeral but always writable)
+    import tempfile
+    tmp = Path(tempfile.gettempdir()) / "xerces_data"
+    tmp.mkdir(parents=True, exist_ok=True)
+    return tmp
+
+DATA_DIR = _resolve_data_dir()
 WATCHLIST_FILE = DATA_DIR / "watchlist.json"
 JOURNAL_FILE   = DATA_DIR / "journal.csv"
 ALERTS_FILE    = DATA_DIR / "alerts.json"
