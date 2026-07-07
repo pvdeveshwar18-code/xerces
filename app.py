@@ -2451,8 +2451,23 @@ with tab_ai:
     st.caption("Ask anything about this stock. Powered by Claude Sonnet 4.6 via Emergent LLM Key. "
                "Live technicals + fundamentals are injected as context automatically.")
 
-    _model = st.selectbox("Model", ["claude-sonnet-4-6","gpt-5.4","gemini-3-flash-preview","claude-haiku-4-5-20251001"],
-                          index=0, key="ai_model")
+    _model_choices = ["auto",
+                      "gemini-2.5-flash", "gemini-2.5-pro",
+                      "claude-sonnet-4-6", "gpt-5.4",
+                      "gemini-3-flash-preview", "claude-haiku-4-5-20251001"]
+    _model = st.selectbox("Model", _model_choices, index=0, key="ai_model",
+                          help="'auto' → Free Gemini first, Emergent Claude fallback when quota exceeded. "
+                               "gemini-2.x → free Google API. others → Emergent LLM key (paid).")
+    # Show which backend served the last response
+    _last = xp.get_last_backend()
+    if _last["name"] != "none":
+        _c = "#00e87a" if "FREE" in _last["name"] else ("#00c8ff" if "Emergent" in _last["name"] else "#ff3355")
+        st.markdown(
+            f'<div style="background:rgba(7,18,32,0.5);border-left:3px solid {_c};'
+            f'padding:6px 10px;border-radius:4px;font-size:11px;color:#ddeeff;'
+            f'font-family:Space Mono,monospace;margin-bottom:8px;">'
+            f'Last call: <b style="color:{_c};">{_last["name"]}</b> · {_last["model"]} · {_last["reason"]}'
+            f'</div>', unsafe_allow_html=True)
 
     # Load fundamentals + news into context lazily
     if "_ai_ctx_extras" not in st.session_state or st.session_state.get("_ai_ctx_ticker") != selected_ticker:
