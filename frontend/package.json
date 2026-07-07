@@ -61,7 +61,7 @@
     "zod": "3.24.4"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "exec bash /app/frontend/run_streamlit.sh",
     "build": "craco build",
     "test": "craco test"
   },
